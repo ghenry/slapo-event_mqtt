@@ -203,7 +203,7 @@ static int event_mqtt_response(Operation *op, SlapReply *rs) {
 	concatf(&event, "# end %s %ld\n\n", what, (long)stamp);
 
     	// Mostly like the pub_client.c example of libmosquitto 
-	em_config_t *cfg = calloc(1, sizeof(em_config_t));
+	em_config_t *cfg = ch_calloc(1, sizeof(em_config_t));
 	if (cfg == NULL) {
 		Debug( LDAP_DEBUG_ANY,
 			"event_mqtt_response: failed to allocate memory for MQTT config.\n",
@@ -229,10 +229,14 @@ static int event_mqtt_response(Operation *op, SlapReply *rs) {
 		return SLAP_CB_CONTINUE;
 	}
 
-	/*  Any clean up here? */
-	
-	/*  Set this back for event_mqtt_db_destroy */
-	em->mosq = cfg->mosq;
+	/*  Move to a em_free( cfg ); */
+	/*  Any more clean up here? */
+	ch_free(event);
+
+	/* There's a lot to free on this structure, so use the main lib */
+	mosquitto_destroy( cfg->mosq );
+	mosquitto_lib_cleanup(); /*  Check this is the thread safe one. */
+	ch_free(cfg);
 
 	/*  Do we need mutex here? */
 	ldap_pvt_thread_mutex_unlock(&em->em_mutex);
@@ -266,10 +270,6 @@ event_mqtt_db_destroy(
 	slap_overinst *on = (slap_overinst *)be->bd_info;
 	event_mqtt_data_t *em = on->on_bi.bi_private;
 	ldap_pvt_thread_mutex_destroy( &em->em_mutex );
-
-	/* There's a lot to free on this structure, so use the main lib */
-	mosquitto_destroy( em->mosq );
-	mosquitto_lib_cleanup(); /*  Check this is the thread safe one. */
 
 	ch_free( em );
 	on->on_bi.bi_private = NULL;
