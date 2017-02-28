@@ -1,0 +1,1 @@
+gcc -g -Wall -I../../../include test_event_mqtt_outwith_overlay.c event_mqtt_utils.c event_mqtt_pub.c -lmosquitto

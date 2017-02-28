@@ -1,0 +1,77 @@
+Mosquitto publish client steps - 31.01.2017 GH
+
+-------------------------
+"The Five Program Steps" - P28, Beginning C for Arduino
+-------------------------
+
+--------------
+Initialisation
+--------------
+Set up config
+
+main()
+mos_config
+mosq mosquitto
+init_config() - mosq_config is in client_shared.h
+client_config_load()
+
+mosquitto_lib_init() - not thread safe
+mosquitto_new()
+mosquitto_connect_callback_set()
+mosquitto_disconnect_callback_set()
+mosquitto_publish_callback_set()
+
+
+client_id_generate()
+client_connect()
+mosquitto_connect_srv()
+mosquitto_connect_bind()
+mosquitto_loop_start() 
+
+
+
+
+--------------
+Input
+--------------
+client_opts_set() - Set defaults and host/topic/port if there, from cn=config
+Get from LDAP ADD / MODIFY etc. to publish
+mosquitto_reinitialise() if new params
+
+
+
+
+--------------
+Process
+--------------
+mosquitto_loop() and mosquitto_publish()
+mosquitto_reconnect() plus _async()
+
+- libevent
+mosquitto_socket() 
+mosquitto_loop_start allows you to 
+        use mosquitto_connect_async and connect_bind_asyc too. via its own thread.
+mosquitto_loop_read()
+mosquitto_loop_write()
+mosquitto_loop_misc()
+
+
+
+
+--------------
+Output
+--------------
+mosquitto_publish()
+
+
+
+
+--------------
+Termination
+--------------
+client_clean_config() Maybe word as destroy()
+client_config_cleanup()
+mosquitto_destroy()
+mosquitto_desconnect()
+mosquitto_lib_cleanup()
+mosquitto_loop_stop()
