@@ -38,6 +38,10 @@ struct em_config {
 	int port;
 	int qos;
 	int mid_sent;
+	int last_mid;
+	int last_mid_sent;
+	bool connected;
+	bool disconnect_sent;
 	bool clean_session;
 	bool retain;
 	char *message; /* pub */

@@ -29,6 +29,11 @@
 int em_mosq_init(em_config_t *cfg);
 int em_publish( em_config_t *cfg, char *event ); 
 int em_free(event_mqtt_data_t *em);
+
+/*  See mosquitto client_pub.c */
+void em_connect_callback(struct mosquitto *mosq, void *obj, int result);
+void em_disconnect_callback(struct mosquitto *mosq, void *obj, int rc);
+void em_publish_callback(struct mosquitto *mosq, void *obj, int mid);
 void em_log_callback(struct mosquitto *mosq, void *obj, int level, const char *str);
 
 #endif /* _EVENT_MQTT_PUB_H */
