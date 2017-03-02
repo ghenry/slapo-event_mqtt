@@ -83,6 +83,8 @@ int em_publish( em_config_t *cfg, char *event ) {
     cfg->qos = 0;
     cfg->message = event;
 
+    mosquitto_lib_init();
+
     // Do we want to allow the client ID to be set?
     cfg->mosq = mosquitto_new("hodor", true, cfg); // cfg here, to share cfg across callbacks  
     if(!cfg->mosq){
@@ -102,8 +104,6 @@ int em_publish( em_config_t *cfg, char *event ) {
 	return EXIT_FAILURE;
     }
     
-    mosquitto_loop_start(cfg->mosq);
-
     mosquitto_log_callback_set(cfg->mosq, em_log_callback);
     mosquitto_connect_callback_set(cfg->mosq, em_connect_callback);
     mosquitto_disconnect_callback_set(cfg->mosq, em_disconnect_callback);
@@ -133,6 +133,7 @@ int em_publish( em_config_t *cfg, char *event ) {
     
     mosquitto_threaded_set(cfg->mosq, true); // set again by loop_start below, but just in case 
     mosquitto_loop_start(cfg->mosq);
+    //mosquitto_loop_forever(cfg->mosq, -1, 1); // -1 is default of 1000ms to wait for packets.
 
     return EXIT_SUCCESS;
 }

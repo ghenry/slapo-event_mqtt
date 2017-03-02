@@ -67,7 +67,8 @@ int main(void) {
 	);
 
 	fprintf(stderr, "cfg pointer is: %p\n", cfg);
-	em_publish(cfg, event);
+	int rc = em_publish(cfg, event);
+	fprintf(stderr, "em_publish returned: %d\n", rc);
 
 	return EXIT_SUCCESS;
 }
