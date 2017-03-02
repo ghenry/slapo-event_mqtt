@@ -130,11 +130,50 @@ int em_publish( em_config_t *cfg, char *event ) {
 	return rc;
     }
     
-    
-    mosquitto_threaded_set(cfg->mosq, true); // set again by loop_start below, but just in case 
-    mosquitto_loop_start(cfg->mosq);
-    //mosquitto_loop_forever(cfg->mosq, -1, 1); // -1 is default of 1000ms to wait for packets.
+    rc = mosquitto_loop_forever(cfg->mosq, -1, 1); // -1 is default of 1000ms to wait for packets.
+    if ( rc > 0 ) {
+	switch(rc){
+		case MOSQ_ERR_INVAL:
+			fprintf( stderr, "Error: Invalid input.\n");
+			break;
+		case MOSQ_ERR_NOMEM:
+			fprintf( stderr, "Error: An out of memory condition occured.\n");
+			break;
+		case MOSQ_ERR_NO_CONN:
+			fprintf( stderr, "Error: we're not connected to a broker.\n");
+			break;
+		case MOSQ_ERR_CONN_LOST:
+			fprintf( stderr, "Error: connection to the broker was lost.\n");
+			break;
+		case MOSQ_ERR_PROTOCOL:
+			fprintf( stderr, "Error: protocol error communicating with the broker.\n");
+			break;
+		case MOSQ_ERR_ERRNO:
+			strerror_r(errno, err, 1024);
+			    fprintf( stderr, 
+			    "Error: %s\n", 
+			    err);
+			break;
+	}	
+	mosquitto_disconnect(cfg->mosq);
+	mosquitto_loop_stop(cfg->mosq, false);
+    }
+     
 
+    /* rc = mosquitto_loop_start(cfg->mosq);
+    if ( rc > 0 ) {
+	switch(rc){
+		case MOSQ_ERR_INVAL:
+			fprintf( stderr, "Error: Invalid input.\n");
+			break;
+		case MOSQ_ERR_NOT_SUPPORTED:
+			fprintf( stderr, "Error: thread support is not available.\n");
+			break;
+	}	
+	mosquitto_disconnect(cfg->mosq);
+	mosquitto_loop_stop(cfg->mosq, false);
+    }
+    */
     return EXIT_SUCCESS;
 }
 
