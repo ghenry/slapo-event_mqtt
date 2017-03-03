@@ -20,18 +20,11 @@
  * =====================================================================================
  */
 
-#include "portable.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include "event_mqtt_config.h"
 #include "event_mqtt_pub.h"
 #include "event_mqtt_utils.h"
-
-#include <ac/string.h>
-#include <ac/ctype.h>
-
-#include "slap.h"
 
 int main(void) {
 
@@ -69,6 +62,9 @@ int main(void) {
 	fprintf(stderr, "cfg pointer is: %p\n", cfg);
 	int rc = em_publish(cfg, event);
 	fprintf(stderr, "em_publish returned: %d\n", rc);
+
+	free(em);
+	free(cfg);
 
 	return EXIT_SUCCESS;
 }
